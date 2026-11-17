@@ -1,6 +1,6 @@
 ---
 title: "Lab 07 - Modelling earnings and course evaluations"
-author: "INSERT NAME HERE"
+author: "Kit Rucker"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -26,16 +26,27 @@ glimpse(college_grad_df)
 # Exercise 1: Exploratory Data Analysis
 
 ```{r}
-#your code here
+ggplot(data = college_grad_df,
+       mapping = aes(x = median)) +
+  geom_histogram(bins = 2500)
+
+college_grad_df %>%
+  group_by(major_category) %>%
+  summarise( average_median = mean(median, na.rm = TRUE)) %>%
+  arrange(desc(average_median))
+  
 ```
 
-*Your explanation*
+Graph shows a histogram with a leftward skew showing that most college majors have a median of between $30,000 - $50,000, with engineering having the highest median.
 
 
 # Exercise 2: Exploring relationship
 
 ```{r}
-#your code here
+ggplot(data = college_grad_df,
+       mapping = aes( x = sharewomen, y = median)) +
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE)
 ```
 
 *Your explanation*
@@ -43,7 +54,16 @@ glimpse(college_grad_df)
 # Exercise 3: Fit and interpret a numerical predictor
 
 ```{r}
-#your code here
+lm(median ~ sharewoman, data = college_grad_df) %>% 
+  augment() %>%
+  ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point(alpha = 0.6) + 
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "blue") + 
+  labs(
+    title = "Residuals vs. Fitted Values",
+    x = "Predicted Median Earnings (.fitted)",
+    y = "Residuals (.resid)"
+  )
 ```
 
 *Your explanation*
